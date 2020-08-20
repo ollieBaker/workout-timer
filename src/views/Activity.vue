@@ -1,7 +1,7 @@
 <template>
   <div class="activity page">
     <section class="current relative">
-      <h1 class="text-6xl">
+      <h1 class="text-6xl text-center">
         {{ state === "active" ? currentReps : message }}
       </h1>
       <div class="rep-count absolute right-0 bottom-0 p-4">
@@ -73,9 +73,9 @@ export default {
         case "resting":
           return "next";
         case "setComplete":
-          return "restart";
+          return "start";
         case "ended":
-          return "finish";
+          return "home";
       }
       return "";
     },
@@ -88,7 +88,7 @@ export default {
         case "resting":
           return "rest";
         case "setComplete":
-          return "go again";
+          return "rest & go again";
         case "ended":
           return "finished!";
       }
@@ -110,11 +110,12 @@ export default {
           this.state = "active";
           break;
         case "setComplete":
+          this.finishRestTimer();
           this.state = "active";
           break;
         case "ended":
           this.reset();
-          this.state = "idle";
+          this.$router.push({ name: "Home" });
           break;
       }
     },
