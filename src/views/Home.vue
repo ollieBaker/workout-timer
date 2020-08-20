@@ -1,7 +1,7 @@
 <template>
   <div class="home page flex flex-col items-center">
     <section class="top section flex items-center justify-center">
-      <button class="btn" @click="$router.push({ name: 'Activity' })">
+      <button class="btn" @click="startActivity">
         START
       </button>
     </section>
@@ -15,6 +15,14 @@
 export default {
   name: "Home",
   components: {},
+  methods: {
+    startActivity() {
+      if (!location.href.includes("localhost")) {
+        document.documentElement.requestFullscreen();
+      }
+      this.$router.push({ name: "Activity" });
+    },
+  },
 };
 </script>
 

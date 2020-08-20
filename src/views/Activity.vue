@@ -1,21 +1,20 @@
 <template>
   <div class="activity page">
-    <section class="current">
+    <section class="current relative">
       <h1 class="text-6xl">
-        {{ state === "active" ? currentReps : "rest" }}
+        {{ state === "active" ? currentReps : message }}
       </h1>
+      <div class="rep-count absolute right-0 bottom-0 p-4">
+        <p>{{ repCount }}</p>
+      </div>
     </section>
     <section class="time flex-col">
-      <p v-if="state === 'resting'" class="rest-time text-4xl">
-        <span class="minutes">{{ minutes }}</span> :
-        <span class="secconds">{{ secconds }}</span> :
-        <span class="millis">{{ millis }}</span>
-      </p>
-      <p class="text-3xl">
-        <span class="minutes">{{ minutes }}</span> :
-        <span class="secconds">{{ secconds }}</span> :
-        <span class="millis">{{ millis }}</span>
-      </p>
+      <TimeDisplay
+        v-if="state === 'resting' || state === 'setComplete'"
+        :time="restTime"
+        class="rest-time text-4xl"
+      />
+      <TimeDisplay :time="time" class="text-3xl" />
     </section>
     <section class="actions">
       <button @click="handleAction" class="btn uppercase text-2xl">
@@ -26,8 +25,13 @@
 </template>
 
 <script>
+import timer from "@/modules/raf-timer.js";
+import TimeDisplay from "@/components/TimeDisplay.vue";
 export default {
   name: "ActivityTracker",
+  components: {
+    TimeDisplay,
+  },
   props: {
     config: {
       type: Object,
@@ -36,17 +40,20 @@ export default {
   },
   data() {
     return {
-      states: ["idle", "active", "resting", "ended"],
+      states: ["idle", "active", "resting", "setComplete", "ended"],
       state: "idle",
       routine: [5, 10, 15, 20],
+      restDuration: 30 * 1000,
+      repCount: 0,
       set: 0,
       repeat: 1,
-      time: {
-        minutes: 0,
-        secconds: 0,
-        millis: 0,
-      },
+      restTime: 0,
+      time: 0,
     };
+  },
+  created() {
+    this.timer = timer();
+    this.restTimer = timer();
   },
   computed: {
     currentReps() {
@@ -60,52 +67,88 @@ export default {
           return "done";
         case "resting":
           return "next";
+        case "setComplete":
+          return "restart";
         case "ended":
           return "finish";
       }
       return "";
     },
-    minutes() {
-      return this.time.minutes;
-    },
-    secconds() {
-      return this.time.secconds;
-    },
-    millis() {
-      return this.time.millis;
+    message() {
+      switch (this.state) {
+        case "idle":
+          return "get ready";
+        case "active":
+          return "";
+        case "resting":
+          return "rest";
+        case "setComplete":
+          return "go again";
+        case "ended":
+          return "finished!";
+      }
+      return "";
     },
   },
   methods: {
     handleAction() {
       switch (this.state) {
         case "idle":
+          this.startTimer();
           this.state = "active";
           break;
         case "active":
           this.state = this.handleActiveStateChange(this.set, this.routine);
           break;
         case "resting":
+          this.finishRestTimer();
+          this.state = "active";
+          break;
+        case "setComplete":
           this.state = "active";
           break;
         case "ended":
-          this.set = 0;
-          this.repeat = 1;
+          this.reset();
           this.state = "idle";
           break;
       }
     },
     handleActiveStateChange(set, { length }) {
+      this.repCount += this.routine[set];
       if (set === length - 1) {
         if (this.repeat) {
           this.repeat--;
           this.set = 0;
-          return "resting";
+          this.startRestTimer();
+          return "setComplete";
         }
+        this.timer.stop();
         return "ended";
       } else {
         this.set++;
+        this.startRestTimer();
         return "resting";
       }
+    },
+    startTimer() {
+      this.timer.start(({ total }) => (this.time = total));
+    },
+    startRestTimer() {
+      this.restTimer.start(({ total }) => {
+        this.restTime = Math.max(this.restDuration - total, 0);
+      });
+    },
+    finishRestTimer() {
+      this.restTimer.stop();
+      this.restTimer.reset();
+      this.restTime = 0;
+    },
+    reset() {
+      this.timer.reset();
+      this.restTimer.reset();
+      this.set = 0;
+      this.repCount = 0;
+      this.repeat = 1;
     },
   },
 };
