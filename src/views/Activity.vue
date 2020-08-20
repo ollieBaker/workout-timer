@@ -17,8 +17,13 @@
       <TimeDisplay :time="time" class="text-3xl" />
     </section>
     <section class="actions">
-      <button @click="handleAction" class="btn uppercase text-2xl">
-        {{ primaryActionLabel }}
+      <button
+        @click="handleAction"
+        class="btn oversize uppercase text-2xl border-0"
+      >
+        <div class="inner">
+          {{ primaryActionLabel }}
+        </div>
       </button>
     </section>
   </div>
