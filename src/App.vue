@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view class="space-y-4" />
+    <amplify-authenticator>
+      <router-view class="space-y-4" />
+    </amplify-authenticator>
   </div>
 </template>
 
@@ -11,13 +13,11 @@
 .page {
   @apply h-full;
 }
+.btn.oversize .inner,
 .btn {
   @apply block rounded-md border-2 border-gray-400 px-4 py-2;
 }
 .btn.oversize {
   @apply border-0 p-4;
-}
-.btn.oversize .inner {
-  @apply block rounded-md border-2 border-gray-400 px-4 py-2;
 }
 </style>

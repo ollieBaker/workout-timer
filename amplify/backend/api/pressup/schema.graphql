@@ -1,0 +1,8 @@
+type Activity @model {
+  id: ID!
+  name: String!
+  description: String
+  time: Int
+  routine: [Int]
+  reps: Int
+}

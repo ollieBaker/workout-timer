@@ -1,0 +1,20 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-pressup-dev-170459-authRole",
+            "UnauthRoleArn": "arn:aws:iam::235222671682:role/amplify-pressup-dev-170459-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::235222671682:role/amplify-pressup-dev-170459-authRole",
+            "Region": "eu-west-2",
+            "DeploymentBucketName": "amplify-pressup-dev-170459-deployment",
+            "UnauthRoleName": "amplify-pressup-dev-170459-unauthRole",
+            "StackName": "amplify-pressup-dev-170459",
+            "StackId": "arn:aws:cloudformation:eu-west-2:235222671682:stack/amplify-pressup-dev-170459/e59e6000-e7b5-11ea-b2c2-0a1f0a72e14c",
+            "AmplifyAppId": "dk46w5nqj9uug"
+        },
+        "categories": {
+            "auth": {
+                "pressupeebc918c": {}
+            }
+        }
+    }
+}

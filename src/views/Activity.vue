@@ -30,18 +30,22 @@
 </template>
 
 <script>
+import { API } from "aws-amplify";
+import { createActivity } from "@/graphql/mutations";
+import { listActivitys } from "@/graphql/queries";
+
 import timer from "@/modules/raf-timer.js";
 import TimeDisplay from "@/components/TimeDisplay.vue";
 export default {
   name: "ActivityTracker",
   components: {
-    TimeDisplay,
+    TimeDisplay
   },
   props: {
     config: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
@@ -54,11 +58,13 @@ export default {
       repeat: 1,
       restTime: 0,
       time: 0,
+      activitys: []
     };
   },
   created() {
     this.timer = timer();
     this.restTimer = timer();
+    this.getActivities();
   },
   computed: {
     currentReps() {
@@ -93,7 +99,7 @@ export default {
           return "finished!";
       }
       return "";
-    },
+    }
   },
   methods: {
     handleAction() {
@@ -114,6 +120,7 @@ export default {
           this.state = "active";
           break;
         case "ended":
+          this.createActivity();
           this.reset();
           this.$router.push({ name: "Home" });
           break;
@@ -156,7 +163,27 @@ export default {
       this.repCount = 0;
       this.repeat = 1;
     },
-  },
+    async createActivity() {
+      const { routine, time } = this;
+      const activity = {
+        name: "Pushups",
+        description: "Free style",
+        reps: 2,
+        routine,
+        time: Math.round(time)
+      };
+      await API.graphql({
+        query: createActivity,
+        variables: { input: activity }
+      });
+    },
+    async getActivities() {
+      const activities = await API.graphql({
+        query: listActivitys
+      });
+      this.activitys = activities.data.listActivitys.items;
+    }
+  }
 };
 </script>
 

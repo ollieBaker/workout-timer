@@ -7,6 +7,7 @@
     </section>
     <section class="bottom section p-4">
       <div class="config bg-gray-400 m-4 h-32"></div>
+      <amplify-sign-out></amplify-sign-out>
     </section>
   </div>
 </template>
@@ -21,8 +22,8 @@ export default {
         document.documentElement.requestFullscreen();
       }
       this.$router.push({ name: "Activity" });
-    },
-  },
+    }
+  }
 };
 </script>
 
